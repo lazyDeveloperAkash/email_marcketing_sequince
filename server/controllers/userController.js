@@ -14,8 +14,8 @@ exports.signup = catchAsyncErrors(async (req, res, next) => {
     const { email, userName, password } = req.body;
 
     // null value check
-    const nullField = [email, userName, password].some((field)=>field?.trim() === "");
-    if(nullField) return next(new ErrorHandler(`Please provide ${nullField} field !`));
+    const nullField = [email, userName, password].some((field) => field?.trim() === "");
+    if (nullField) return next(new ErrorHandler(`Please provide ${nullField} field !`));
 
     //create an user
     const user = await new userModel(req.body).save();
@@ -26,21 +26,34 @@ exports.signin = catchAsyncErrors(async (req, res, next) => {
     const { emailOruserName, password } = req.body;
 
     // null value check
-    const nullField = [email, userName, password].some((field)=>field?.trim() === "");
-    if(nullField) return next(new ErrorHandler(`Please provide ${nullField} field !`));
+    if(emailOruserName === "") return next("Please provide email or username!");
+    if(password === "") return next("Please provide password!");
 
     const user = await userModel.findOne({ $or: [{ userName: emailOruserName }, { email: emailOruserName }] }).select("+password");
 
-    if (!user) return next(new ErrorHandler("User not found with this email address!", 404));
+    if (!user) return next(new ErrorHandler("User not found with this email address or username!", 404));
     const isMatch = user.comparePassword(password);
     if (!isMatch) return next(new ErrorHandler("Wrong Password", 500));
     token(user, 200, res);
 });
 
 exports.signout = catchAsyncErrors(async (req, res, next) => {
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
-    res.status(200).json({ message: "Successfully Singout!" });
+    if (req.id) return next(new ErrorHandler("user not found!", 404));
+    await User.findByIdAndUpdate(
+        req.id,
+        {
+            $unset: {
+                refreshToken: 1 // this removes the field from document
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    res.clearCookie('accessToken')
+        .clearCookie('refreshToken')
+        .status(200).json({ message: "Successfully Singout!" });
 });
 
 exports.generateAccessToken = catchAsyncErrors(async (req, res, next) => {

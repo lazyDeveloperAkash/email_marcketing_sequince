@@ -4,8 +4,7 @@ const { catchAsyncErrors } = require("../middlewares/catchAsyncErrors");
 const userModel = require("../database/models/userModel");
 
 exports.isAuthenticated = catchAsyncErrors(async (req, res, next) => {
-    const { accessToken } = req.cookies;
-    // console.log(req.cookies)
+    const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
     if (!accessToken) return next(new ErrorHandler('Unauthorized: No access token!', 401));
 

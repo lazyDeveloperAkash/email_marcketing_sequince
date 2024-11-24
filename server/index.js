@@ -21,8 +21,8 @@ app.use(cors({
 }))
 
 //cookie paeser
-// const cookieParser = require("cookie-parser");
-// app.use(cookieParser());
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 // Routes
 app.use("/api", require("./routes/userRoute.js"));

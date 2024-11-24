@@ -10,7 +10,7 @@ router.get('/access-token', generateAccessToken);
 
 // authenticated routes
 router.get('/user', isAuthenticated, loggedinUser);
-router.post('/signout',isAuthenticated, signout);
+router.get('/signout', isAuthenticated, signout);
 router.post('/schedule-email', isAuthenticated, scheduleEmail);
 
 module.exports = router;
