@@ -7,6 +7,7 @@ import SignInPage from "./components/Signin";
 import SignUpPage from "./components/SignupPage"
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import Navbar from "./components/Navbar";
+import RedirectRoute from "./components/RedirectRoute";
 
 // Layout component to conditionally show Navbar
 const Layout = ({ children }) => {
@@ -35,8 +36,8 @@ const App = () => {
         <Layout />
         <Routes>
           <Route path="/" element={<Navigate to="/signin" />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<RedirectRoute><SignUpPage /></RedirectRoute>} />
+          <Route path="/signin" element={<RedirectRoute><SignInPage /></RedirectRoute>} />
           <Route
             path="/dashboard"
             element={

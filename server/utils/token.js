@@ -2,6 +2,7 @@ const { refreshTokenOptions, accessTokenOptions } = require("./tokenOptions");
 
 exports.token = async(user , statusCode, res) => {
     const { accessToken, refreshToken } = user.getJWTTokens();
+    console.log(accessToken)
 
     // save new refresh token to database
     user.refreshToken = refreshToken;
