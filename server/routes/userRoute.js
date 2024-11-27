@@ -6,7 +6,7 @@ const { signup, signin, signout, loggedinUser, generateAccessToken, hello, sched
 router.get('/hello', hello);
 router.post('/signup', signup);
 router.post('/signin', signin);
-router.get('/access-token', generateAccessToken);
+router.post('/access-token', generateAccessToken);
 
 // authenticated routes
 router.get('/user', isAuthenticated, loggedinUser);

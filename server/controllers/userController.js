@@ -4,6 +4,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const { token } = require("../utils/token");
 const JWT = require('jsonwebtoken');
 const agenda = require("../utils/Agenda");
+const { accessTokenOptions } = require("../utils/tokenOptions");
 
 exports.loggedinUser = catchAsyncErrors(async (req, res, next) => {
     const user = await userModel.findById(req.id);
@@ -26,8 +27,8 @@ exports.signin = catchAsyncErrors(async (req, res, next) => {
     const { emailOruserName, password } = req.body;
 
     // null value check
-    if(emailOruserName === "") return next("Please provide email or username!");
-    if(password === "") return next("Please provide password!");
+    if (emailOruserName === "") return next("Please provide email or username!");
+    if (password === "") return next("Please provide password!");
 
     const user = await userModel.findOne({ $or: [{ userName: emailOruserName }, { email: emailOruserName }] }).select("+password");
 
@@ -69,7 +70,11 @@ exports.generateAccessToken = catchAsyncErrors(async (req, res, next) => {
     //compare incoming and database refresh token
     if (user?.refreshToken !== refreshToken) return next(new ErrorHandler("invalid refresh expiered!", 401));
 
-    token(user, 200, res);
+    const accessToken = JWT.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRE
+    })
+    res.cookie("accessToken", accessToken, accessTokenOptions)
+        .status(200).json({ accessToken: accessToken, success: true });
 });
 
 exports.hello = catchAsyncErrors(async (req, res, next) => {

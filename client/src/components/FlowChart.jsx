@@ -1,92 +1,80 @@
-import { useState, useCallback } from 'react';
-import ReactFlow, {
-  addEdge,
-  Background,
-  Controls,
+import { useCallback, useState } from 'react';
+import {
+  ReactFlow,
   MiniMap,
-} from 'react-flow-renderer';
+  Controls,
+  addEdge,
+} from '@xyflow/react';
 
-const initialNodes = [
-  {
-    id: '1',
-    type: 'input',
-    data: { label: 'Lead Source' },
-    position: { x: 250, y: 5 }, // Ensure initial position is defined
-  },
-];
-
-const initialEdges = [];
+import '@xyflow/react/dist/style.css';
 
 const FlowChart = () => {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const [nodes, setNodes] = useState([
+    {
+      id: 'node1',
+      type: 'customNode',
+      position: { x: 0, y: 0 },
+      data: { label: (
+        <div  className='react-flow__node-inner flex flex-col items-center px-3 gap-2'>
+          +
+          <p>Add Lead Source</p>
+        </div>
+      ) },
+    },
+    {
+      id: 'node2',
+      type: 'customNode',
+      position: { x: 0, y: 150 },
+      connconnectable: true,
+      data: {
+        label: (
+          <div className="react-flow__node-inner w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center cursor-pointer border-2 border-gray-300">
+            +
+          </div>
+        ),
+      },
+    },
+  ]);
 
-  // Handle adding new nodes dynamically
-  const addNode = useCallback(() => {
-    const newNode = {
-      id: `${nodes.length + 1}`,
-      data: { label: `Node ${nodes.length + 1}` },
-      position: { x: Math.random() * 400, y: Math.random() * 400 }, // Always provide a valid position
-    };
-    setNodes((prevNodes) => [...prevNodes, newNode]);
-  }, [nodes]);
+  const [edges, setEdges] = useState([
+    {
+      id: 'initialNode-addNode',
+      source: 'node1',
+      target: 'node2',
+      animated: true,
+    },
+  ]);
 
-  // Update nodes safely
-  const onNodesChange = useCallback(
-    (changes) =>
-      setNodes((nds) => {
-        const updatedNodes = nds.map((node) => {
-          const change = changes.find((c) => c.id === node.id);
-          if (change) {
-            return {
-              ...node,
-              ...change,
-              position: change.position || node.position || { x: 0, y: 0 },
-            };
-          }
-          return node;
-        });
-        return updatedNodes;
-      }),
-    []
-  );
+  
 
-  // Update edges safely
-  const onEdgesChange = useCallback((changes) => {
-    setEdges((eds) =>
-      eds.map((edge) => changes.find((c) => c.id === edge.id) || edge)
-    );
-  }, []);
-
-  // Handle new connections
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
-  );
+  // const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
   return (
-    <div className="h-screen bg-gray-100">
-      <div className="p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Email Marketing Flowchart</h1>
-        <button
-          onClick={addNode}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Add Node
+    <div className="h-[90vh] flex flex-col">
+      {/* Header Section */}
+      <div className="h-[10vh] flex justify-between items-center px-[5vw]">
+        <div>
+          <h1 className="text-xl font-bold">Akashs First Sequence 🚀</h1>
+          <p className="text-sm text-gray-600">
+            Click on a block to configure and add it in sequence.
+          </p>
+        </div>
+        <button className="bg-blue-500 text-white py-2 px-5 rounded-md font-bold">
+          Save & Schedule
         </button>
       </div>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-      >
-        <MiniMap />
-        <Controls />
-        <Background />
-      </ReactFlow>
+
+      {/* Flowchart Section */}
+      <div className="h-[70vh] mx-[5vw] bg-gray-50 relative rounded-2xl overflow-hidden">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          // onConnect={onConnect}
+        >
+          <Controls />
+          <MiniMap />
+        </ReactFlow>
+      </div>
     </div>
   );
 };

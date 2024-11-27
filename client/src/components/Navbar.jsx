@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/UserContext";
 const Navbar = () => {
     const { user } = useAuth();
     return (
-        <div className='flex items-center justify-between w-[70%] mx-auto py-6'>
+        <div className='flex items-center justify-between w-[70%] mx-auto h-[10vh]'>
             <Link to="/dashboard" >
                 {user && <h1 className='text-2xl'>{`Hey, ${user?.userName}`}</h1>}
             </Link>
